@@ -1,0 +1,190 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// генерируем эту схему для prisma-clien именно для js
+generator client {
+  provider = "prisma-client-js"
+}
+
+// объясняем с какой базой данных работаем
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// создаем таблицу
+
+// пользователь
+model User {
+  id Int @id @default(autoincrement())
+
+  fullName String
+  email    String   @unique
+  password String
+  role     UserRole @default(USER)
+
+  // авторизация через соц.сеть
+  provider   String?
+  providerId String?
+
+  cart             Cart?
+  orders           Order[]
+  verificationCode VerificationCode?
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+// категория продукта
+model Category {
+  id Int @id @default(autoincrement())
+
+  name String @unique
+
+  products Product[]
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+// продукт
+model Product {
+  id Int @id @default(autoincrement())
+
+  name     String
+  imageUrl String
+
+  category   Category @relation(fields: [categoryId], references: [id]) // у продукта categoryId 4 => ищет id === 4 в Category (ONE TO MANY)
+  categoryId Int
+
+  ingredients Ingredient[]
+  items       ProductItem[]
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+// полная инф. о вариации пиццы
+model ProductItem {
+  id Int @id @default(autoincrement())
+
+  price     Int
+  size      Int?
+  pizzaType Int?
+
+  cartItems CartItem[]
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+// ингридиент
+model Ingredient {
+  id Int @id @default(autoincrement())
+
+  name     String
+  imageUrl String
+  price    Int
+
+  products  Product[]
+  // не надо, но для призмы необходима обратная связь
+  cartItems CartItem[]
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+// корзина
+model Cart {
+  id Int @id @default(autoincrement())
+
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?  @unique
+
+  items CartItem[]
+
+  // токен для корзины не заригестрированных пользователей
+  token String
+
+  totalAmount Int @default(0)
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+// продукты в корзине
+model CartItem {
+  id Int @id @default(autoincrement())
+
+  productItem   ProductItem @relation(fields: [producItemtId], references: [id])
+  producItemtId Int
+
+  cart   Cart @relation(fields: [cartId], references: [id])
+  cartId Int
+
+  quanity Int
+
+  // доополнительные ингридиенты к заказу
+  ingredients Ingredient[]
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+// заказ
+model Order {
+  id Int @id @default(autoincrement())
+
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  token String
+
+  totalAmount Int
+  status      OrderStatus
+  // сервис оплаты
+  paymentId   String?
+
+  items Json
+
+  // если заказ не для себя (иначе можно было взять из User)
+  fullName String
+  email    String
+  phone    String
+  address  String
+  comment  String?
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+model VerificationCode {
+  id Int @id @default(autoincrement())
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int @unique
+
+  code String
+
+  createAt DateTime @default(now())
+
+  @@unique([userId, code])
+}
+
+enum OrderStatus {
+  // создал но не оплатил
+  PENDING
+  // создал и оплатил
+  SECCEEDED
+  // ошибка или отмена
+  CANCELED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
