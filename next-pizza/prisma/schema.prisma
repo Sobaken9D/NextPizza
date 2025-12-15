@@ -6,12 +6,18 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// объясняем с какой базой данных работаем
+объясняем с какой базой данных работаем
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+  // directUrl = env("DATABASE_URL_UNPOOLED")
+  // directUrl = env("POSTGRES_URL_NON_POOLING")
 }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
 
 // создаем таблицу
 
@@ -23,6 +29,7 @@ model User {
   email    String   @unique
   password String
   role     UserRole @default(USER)
+  verified DateTime
 
   // авторизация через соц.сеть
   provider   String?
@@ -32,15 +39,15 @@ model User {
   orders           Order[]
   verificationCode VerificationCode?
 
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // категория продукта
 model Category {
   id Int @id @default(autoincrement())
 
-  name String @unique
+  name String
 
   products Product[]
 
@@ -120,8 +127,8 @@ model Cart {
 model CartItem {
   id Int @id @default(autoincrement())
 
-  productItem   ProductItem @relation(fields: [producItemtId], references: [id])
-  producItemtId Int
+  productItem   ProductItem @relation(fields: [productItemId], references: [id])
+  productItemId Int
 
   cart   Cart @relation(fields: [cartId], references: [id])
   cartId Int
@@ -166,7 +173,7 @@ model VerificationCode {
   id Int @id @default(autoincrement())
 
   user   User @relation(fields: [userId], references: [id])
-  userId Int @unique
+  userId Int  @unique
 
   code String
 
@@ -179,7 +186,7 @@ enum OrderStatus {
   // создал но не оплатил
   PENDING
   // создал и оплатил
-  SECCEEDED
+  SUCCEEDED
   // ошибка или отмена
   CANCELED
 }
