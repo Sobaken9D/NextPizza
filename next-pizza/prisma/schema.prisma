@@ -1,23 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// генерируем эту схему для prisma-clien именно для js
 generator client {
   provider = "prisma-client-js"
 }
 
-объясняем с какой базой данных работаем
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
-  // directUrl = env("DATABASE_URL_UNPOOLED")
-  // directUrl = env("POSTGRES_URL_NON_POOLING")
+  url      = env("DATABASE_URL")
 }
-
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
 
 // создаем таблицу
 
@@ -190,6 +178,12 @@ enum OrderStatus {
   // ошибка или отмена
   CANCELED
 }
+
+// model ABC {
+//   id Int @id @default(autoincrement())
+//
+//   name String
+// }
 
 enum UserRole {
   USER
