@@ -1,54 +1,3 @@
-// // генерация данных
-// import {prisma} from "./prisma-client";
-//
-// async function up() {
-//
-//   await prisma.user.create({
-//     data: {
-//       fullName: 'User Test',
-//       email: 'user@test.ru',
-//       password: '121232132132132133',
-//       verified: new Date(),
-//       role: 'USER',
-//     }
-//   })
-//
-//   await prisma.user.create({
-//     data: {
-//       fullName: '111',
-//       email: '222',
-//       password: '333',
-//       verified: new Date(),
-//       role: 'ADMIN',
-//     }
-//   })
-// }
-//
-// // очистка данных перед генерацией
-// async function down() {
-//   await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE`;
-// }
-//
-// async function main() {
-//   try {
-//     await down();
-//     await up();
-//   } catch (e) {
-//     console.error(e);
-//   }
-// }
-//
-// main()
-//   .then(async () => {
-//     await prisma.$disconnect();
-//   })
-//   .catch(async (e) => {
-//     console.error(e);
-//     await prisma.$disconnect();
-//     process.exit(1);
-//   });
-
-
 // генерация данных
 import {Prisma} from "@prisma/client";
 import {hashSync} from "bcrypt";
@@ -209,7 +158,19 @@ async function up() {
       },
     ],
   });
+
+  await prisma.cartItem.create({
+    data: {
+      productItemId: 1, // говорит о вариации пиццы
+      cartId: 1,
+      quantity: 2,
+      ingredients: {
+        connect: [{id: 1}, {id: 2}, {id: 3}],
+      },
+    },
+  });
 }
+
 
 // очистка данных перед генерацией
 async function down() {
