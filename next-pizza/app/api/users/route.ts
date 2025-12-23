@@ -1,3 +1,4 @@
+// роуты нужны для отлавливания запросов
 import {NextRequest, NextResponse} from "next/server";
 import {prisma} from "@/prisma/prisma-client";
 

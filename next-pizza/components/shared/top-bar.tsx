@@ -5,16 +5,16 @@ import {Categories} from "@/components/shared/categories";
 import {SortPopup} from "@/components/shared/sort-popup";
 
 interface Props {
-    className?: string;
+  className?: string;
 }
 
 export const TopBar: React.FC<Props> = ({className}) => {
   return (
-      <div className={cn('sticky top-0 bg-white py-5 shadow-lg shadow-black/5 z-10', className)}>
-          <Container className="flex items-center justify-between">
-              <Categories></Categories>
-              <SortPopup></SortPopup>
-          </Container>
-      </div>
+    <div className={cn('sticky top-0 bg-white py-5 shadow-lg shadow-black/5 z-10', className)}>
+      <Container className="flex items-center justify-between">
+        <Categories></Categories>
+        <SortPopup></SortPopup>
+      </Container>
+    </div>
   );
 };

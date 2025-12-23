@@ -9,5 +9,6 @@ export {TopBar} from './top-bar';
 export {RangeSlider} from './range-slider';
 import {CheckboxFiltersGroup} from "./checkbox-filters-group";
 import {ProductCard} from "./product-card";
+import {SearchInput} from './search-input';
 
 
