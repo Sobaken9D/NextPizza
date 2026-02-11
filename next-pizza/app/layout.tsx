@@ -1,32 +1,15 @@
-// Оболочка всего проекта
+// next Route Groups - (route) and (dashboard) - группы роутов со своими лаяотами
+// next Route Parallel - что-то типа асинхронного рендера страниц // после этого типа перезагрузи страницу
 
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Nunito } from 'next/font/google';
+import {Nunito} from 'next/font/google';
 import "./globals.css";
-import {Header} from "@/components/shared/header";
-
+import React from "react";
 
 const nunito = Nunito({
-    subsets: ['cyrillic'],
-    variable: '--font-nunito',
-    weight: ['400', '500', '600', '700', '800', '900'],
+  subsets: ['cyrillic'],
+  variable: '--font-nunito',
+  weight: ['400', '500', '600', '700', '800', '900'],
 });
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-
-// Для CEO
-export const metadata: Metadata = {
-  title: "Next Pizza | Главная",
-};
 
 export default function RootLayout({
   children,
@@ -35,14 +18,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={nunito.variable}>
-          <main className='min-h-screen'>
-              <Header></Header>
-
-              {/*Сами страницы*/}
-              {children}
-          </main>
-      </body>
+    <body className={nunito.variable}>
+    <head>
+      <link
+        data-rh="true"
+        rel="icon"
+        href="/assets/logo.png"
+      />
+    </head>
+      {/*Сами страницы*/}
+      {children}
+    </body>
     </html>
   );
 }
