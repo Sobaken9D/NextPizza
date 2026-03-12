@@ -7,17 +7,21 @@ interface Props {
   imageUrl: string;
   name: string;
   className?: string;
-  onClickAdd?: VoidFunction;
+  onSubmit?: VoidFunction;
+  price: number;
+  loading?: boolean;
 }
+
+// Форма выбора продукта
 
 export const ChooseProductForm: React.FC<Props> = ({
   imageUrl,
   name,
   className,
-  onClickAdd
+  onSubmit,
+  price,
+  loading
 }) => {
-  const textDetaills = '30 cm traditional'
-  const totalPrice = 350;
 
   return (
     <div className={cn(className, 'flex flex-1')}>
@@ -36,12 +40,13 @@ export const ChooseProductForm: React.FC<Props> = ({
           className="font-extrabold mb-1"
         />
 
-        <p className="text-gray-400">{textDetaills}</p>
-
         <Button
+          loading={loading}
+          // () => onSubmit?.() далем так, а не onSubmit, чтобы не передавать огромный обхект события
+          onClick={() => onSubmit?.()}
           className="h-[55px] px-10 text-base rounded-[18px] w-full mt-10"
         >
-          Добавить в корзину за {totalPrice} ₽
+          Добавить в корзину за {price} ₽
         </Button>
       </div>
     </div>

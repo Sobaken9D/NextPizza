@@ -118,6 +118,8 @@ model CartItem {
   productItem   ProductItem @relation(fields: [productItemId], references: [id])
   productItemId Int
 
+  // fields: [cartId] - поле в текущей модели, которое хранит связь
+  // references: [id] - поле в связанной модели, на которое ссылаемся
   cart   Cart @relation(fields: [cartId], references: [id])
   cartId Int
 

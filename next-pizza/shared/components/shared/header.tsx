@@ -35,7 +35,7 @@ export const Header: React.FC<Props> = ({className}) => {
           </div>
         </Link>
 
-        <div className="mx-10 flex-1"><SearchInput/></div>
+        <div className="mx-10 flex-1"><SearchInput /></div>
 
         {/*Правая часть*/}
         <div className="flex items-center gap-3">
@@ -48,7 +48,7 @@ export const Header: React.FC<Props> = ({className}) => {
           </Button>
 
           <div>
-            <CartButton/>
+            <CartButton />
           </div>
         </div>
 
