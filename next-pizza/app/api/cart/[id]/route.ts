@@ -54,8 +54,9 @@ export async function PATCH(req: NextRequest, {params}: {
   }
 }
 
-export async function DELETE(req: NextRequest, {params}: {
-  params: { id: string }
+export async function DELETE(
+  req: NextRequest,
+  {params}: { params: Promise<{ id: string }>
 }) {
   try {
     const {id} = await params;

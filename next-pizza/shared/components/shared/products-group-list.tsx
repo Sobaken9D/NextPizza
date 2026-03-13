@@ -6,10 +6,11 @@ import {Title} from "@/shared/components/shared/title";
 import {cn} from "@/shared/lib/utils";
 import {ProductCard} from "@/shared/components/shared/product-card";
 import {useCategoryStore} from "@/shared/store/category";
+import {ProductWithRelations} from "@/@types/prisma";
 
 interface Props {
   title: string;
-  items: any[];
+  items: ProductWithRelations[];
   className?: string;
   listClassName?: string;
   categoryId: number;
@@ -23,8 +24,16 @@ export const ProductsGroupList: React.FC<Props> = ({
   items
 }) => {
   const setActiveCategoryId = useCategoryStore((state) => state.setActiveId)
+
   const intersectionRef = React.useRef(null);
-  const intersection = useIntersection(intersectionRef, {
+
+  // const intersection = useIntersection(intersectionRef, {
+  //   threshold: 0.4,
+  // });
+  // const intersection = useIntersection(intersectionRef as React.RefObject<HTMLElement>, {
+  //   threshold: 0.4,
+  // });
+  const intersection = useIntersection(intersectionRef as unknown as React.RefObject<HTMLElement>, {
     threshold: 0.4,
   });
 
@@ -47,13 +56,14 @@ export const ProductsGroupList: React.FC<Props> = ({
       />
 
       <div className={cn('grid grid-cols-3 gap-[50px]', listClassName)}>
-        {items.map((item, i) => (
+        {items.map((product, i) => (
           <ProductCard
-            key={item.id}
-            id={item.id}
-            name={item.name}
-            imageUrl={item.imageUrl}
-            price={item.items[0].price}
+            key={product.id}
+            id={product.id}
+            name={product.name}
+            imageUrl={product.imageUrl}
+            price={product.items[0].price}
+            ingredients={product.ingredients}
           />
         ))}
       </div>

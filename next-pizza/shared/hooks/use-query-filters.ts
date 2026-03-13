@@ -3,6 +3,7 @@ import { Filters } from './use-filters';
 import qs from 'qs';
 import { useRouter } from 'next/navigation';
 
+// следит за изменениями и обновляет URL
 export const useQueryFilters = (filters: Filters) => {
   const isMounted = React.useRef(false);
   const router = useRouter();
@@ -29,7 +30,7 @@ export const useQueryFilters = (filters: Filters) => {
 
     // isMounted - Предотвращает обновление URL при первоначальном монтировании компонента
     //
-    // Без этого при загрузке страницы сразу происходило обновление URL, которое снова триггерило перерендер
+    // Без этого при загрузке страницы сразу происходило обновление URL, которое снова триггерило ререндер
 
     isMounted.current = true;
   }, [filters]);

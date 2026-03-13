@@ -3,6 +3,7 @@ import {cn} from "@/shared/lib/utils";
 
 interface Props {
   className?: string;
+  children: React.ReactNode;
 }
 
 export const Container: React.FC<Props> = ({className, children}) => {

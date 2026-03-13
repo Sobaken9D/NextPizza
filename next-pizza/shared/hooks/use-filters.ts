@@ -28,6 +28,7 @@ interface ReturnProps extends Filters {
   setSelectedIngredients: (value: string) => void;
 }
 
+// хранит выбранные фильтры
 export const useFilters = (): ReturnProps => {
   // берем из URL параметры (для перезагрузки)
   const searchParams = useSearchParams() as unknown as Map<keyof QueryFilters, string>;

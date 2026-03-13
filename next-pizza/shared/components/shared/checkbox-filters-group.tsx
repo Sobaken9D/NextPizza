@@ -12,9 +12,9 @@ type Item = FilterChecboxProps;
 interface Props {
   title: string;
   className?: string;
-  items?: Item[];
+  items: Item[];
   // При не раскрытом списке
-  defaultItems: Item[];
+  defaultItems?: Item[];
   searchInputPlaceholder?: string;
   onClickCheckbox?: (id: string) => void;
   defaultValue?: string[];
