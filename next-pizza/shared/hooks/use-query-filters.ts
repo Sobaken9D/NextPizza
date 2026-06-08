@@ -24,8 +24,6 @@ export const useQueryFilters = (filters: Filters) => {
       router.push(`?${query}`, {
         scroll: false,
       });
-
-      console.log(filters, 999);
     }
 
     // isMounted - Предотвращает обновление URL при первоначальном монтировании компонента

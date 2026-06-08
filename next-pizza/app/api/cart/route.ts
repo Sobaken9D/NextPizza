@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         OR: [
           {
             token,
-          }
+          },
         ],
       },
       include: {
@@ -56,7 +56,6 @@ export async function GET(req: NextRequest) {
 
 // http://localhost:3000/api/cart
 // + метод POST (в postman)
-// +
 // {
 //   "productItemId": 3,
 //   "ingredients": [1,2,3]
@@ -71,6 +70,7 @@ export async function POST(req: NextRequest) {
     }
 
     // .json - асинхронный метод, который читает тело запроса и парсит JSON
+    // этот метод есть только у объектов Response и Reqeuest
 
     const userCart = await findOrCreateCart(token);
 

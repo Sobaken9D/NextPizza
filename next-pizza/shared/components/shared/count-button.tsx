@@ -1,6 +1,6 @@
-import { cn } from '@/shared/lib/utils';
+import {cn} from '@/shared/lib/utils';
 import React from 'react';
-import { CountIconButton } from './count-icon-button';
+import {CountIconButton} from './count-icon-button';
 
 export interface CountButtonProps {
   value?: number;
@@ -26,7 +26,11 @@ export const CountButton: React.FC<CountButtonProps> = ({
 
       <b className={size === 'sm' ? 'text-sm' : 'text-md'}>{value}</b>
 
-      <CountIconButton onClick={() => onClick?.('plus')} size={size} type="plus" />
+      <CountIconButton
+        onClick={() => onClick?.('plus')}
+        size={size}
+        type="plus"
+      />
     </div>
   );
 };

@@ -4,7 +4,7 @@
 import {Nunito} from 'next/font/google';
 import "./globals.css";
 import React from "react";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, {Toaster} from 'react-hot-toast';
 
 const nunito = Nunito({
   subsets: ['cyrillic'],
@@ -29,7 +29,7 @@ export default function RootLayout({
     <body className={nunito.variable}>
     {/*Сами страницы*/}
     {children}
-    <Toaster/>
+    <Toaster />
     </body>
     </html>
   );

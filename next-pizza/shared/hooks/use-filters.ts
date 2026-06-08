@@ -1,4 +1,4 @@
-// // хук отвечает за хранения состояния фильтраций
+// хук отвечает за хранения состояния фильтраций
 import {useSearchParams} from 'next/navigation';
 import {useSet} from 'react-use';
 import React from 'react';

@@ -29,7 +29,7 @@ export default async function Home({searchParams}: {searchParams: GetSearchParam
 
           {/*Фильтрация*/}
           <div className="w-[250px]">
-            <Suspense>
+            <Suspense fallback="Загрузка фильтров...">
               <Filters></Filters>
             </Suspense>
           </div>
