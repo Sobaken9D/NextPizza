@@ -1,24 +1,44 @@
 import React from 'react';
-import {useCartStore} from '../store';
-import {CreateCartItemValues} from '../services/dto/cart.dto';
-import {CartStateItem} from '../lib/get-cart-details';
+import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
+import {
+  fetchCartItems,
+  updateItemQuantity,
+  removeCartItem,
+  addCartItem
+} from '@/shared/store/features/cartSlice';
+import { CreateCartItemValues } from '../services/dto/cart.dto';
 
-type ReturnProps = {
-  totalAmount: number;
-  items: CartStateItem[];
-  loading: boolean;
-  updateItemQuantity: (id: number, quantity: number) => void;
-  removeCartItem: (id: number) => void;
-  addCartItem: (values: CreateCartItemValues) => void;
-};
+export const useCart = () => {
+  const dispatch = useAppDispatch();
 
-// выносим в отдельный хук чтобы не делать новую ссылку при каждом рендере
-export const useCart = (): ReturnProps => {
-  const cartState = useCartStore((state) => state);
+  // 1. Достаем все нужные данные из Redux-стейта за один раз
+  const { items, totalAmount, loading } = useAppSelector((state) => state.cart);
 
+  // 2. Автоматически запрашиваем корзину при монтировании хука
   React.useEffect(() => {
-    cartState.fetchCartItems();
-  }, []);
+    dispatch(fetchCartItems());
+  }, [dispatch]);
 
-  return cartState;
+  // 3. Оборачиваем методы в dispatch, чтобы компоненты вызывали их напрямую
+  const handleUpdateItemQuantity = (id: number, quantity: number) => {
+    dispatch(updateItemQuantity({ id, quantity }));
+  };
+
+  const handleRemoveCartItem = (id: number) => {
+    dispatch(removeCartItem({ id }));
+  };
+
+  const handleAddCartItem = (values: CreateCartItemValues) => {
+    dispatch(addCartItem({values})); // Предполагаем, что addCartItem thunk принимает values напрямую
+  };
+
+  // Возвращаем точно такой же интерфейс, какой был у Zustand
+  return {
+    items,
+    totalAmount,
+    loading,
+    updateItemQuantity: handleUpdateItemQuantity,
+    removeCartItem: handleRemoveCartItem,
+    addCartItem: handleAddCartItem,
+  };
 };

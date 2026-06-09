@@ -5,8 +5,9 @@ import {useIntersection} from 'react-use';
 import {Title} from "@/shared/components/shared/title";
 import {cn} from "@/shared/lib/utils";
 import {ProductCard} from "@/shared/components/shared/product-card";
-import {useCategoryStore} from "@/shared/store/category";
 import {ProductWithRelations} from "@/@types/prisma";
+import {setActiveId} from "@/shared/store/features/categorySlice";
+import {useAppDispatch} from "@/shared/store/hooks";
 
 interface Props {
   title: string;
@@ -23,7 +24,7 @@ export const ProductsGroupList: React.FC<Props> = ({
   className,
   items
 }) => {
-  const setActiveCategoryId = useCategoryStore((state) => state.setActiveId)
+  const dispatch = useAppDispatch();
 
   const intersectionRef = React.useRef(null);
 
@@ -39,7 +40,7 @@ export const ProductsGroupList: React.FC<Props> = ({
 
   React.useEffect(() => {
     if (intersection?.isIntersecting) {
-      setActiveCategoryId(categoryId);
+      dispatch(setActiveId(categoryId));
     }
   }, [categoryId, intersection?.isIntersecting, title])
 

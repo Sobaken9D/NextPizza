@@ -1,14 +1,15 @@
 'use client';
 
 import { ProductWithRelations } from '@/@types/prisma';
-import { useCartStore } from '@/shared/store';
+// import { useCartStore } from '../../store';
 import React from 'react';
 import toast from 'react-hot-toast';
 import {
   ChooseProductForm
 } from "@/shared/components/shared/choose-product-form";
 import {ChoosePizzaForm} from "@/shared/components/shared/choose-pizza-form";
-import {useRouter} from "next/navigation";
+// import {useRouter} from "next/navigation";
+import {useCart} from "@/shared/hooks/use-cart";
 
 interface Props {
   product: ProductWithRelations;
@@ -18,14 +19,14 @@ interface Props {
 export const ProductForm: React.FC<Props> = ({ product, onSubmit: _onSubmit }) => {
   const firstItem = product.items[0];
   const isPizzaForm = Boolean(firstItem.pizzaType);
-  const addCartItem = useCartStore(state => state.addCartItem);
-  const loading = useCartStore(state => state.loading);
+
+  const {addCartItem, loading} = useCart();
 
   const onSubmit = async (productItemId?: number, ingredients?: number[]) => {
     try {
       const itemId = productItemId ?? firstItem.id;
 
-      await addCartItem({
+      addCartItem({
         productItemId: itemId,
         ingredients,
       });
