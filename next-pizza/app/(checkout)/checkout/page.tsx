@@ -1,18 +1,40 @@
 'use client';
 
+import {zodResolver} from '@hookform/resolvers/zod';
 import {
+  CheckoutAddressForm,
   CheckoutSidebar,
   Container,
   Title,
-  WhiteBlock
-} from "@/shared/components/shared";
-import {Input, Textarea} from "@/shared/components/ui";
-import {CheckoutCart} from "@/shared/components/shared/checkout";
+  CheckoutCart,
+  CheckoutPersonalForm
+} from "@/shared/components";
 import {useCart} from "@/shared/hooks/use-cart";
 import {useState} from "react";
+import {FormProvider, useForm} from "react-hook-form";
+import {
+  checkoutFormSchema,
+  CheckoutFormValues
+} from "@/shared/constants/checkout-form-schema";
+import toast from "react-hot-toast";
+import {createOrder} from "@/app/actions";
 
 export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
+
+  // CheckoutFormValues - для типизации
+  // checkoutFormSchema - для рантайм проверки
+  const form = useForm<CheckoutFormValues>({
+    resolver: zodResolver(checkoutFormSchema),
+    defaultValues: {
+      email: '',
+      firstName: '',
+      lastName: '',
+      phone: '',
+      address: '',
+      comment: '',
+    },
+  });
 
   const {
     totalAmount,
@@ -27,6 +49,34 @@ export default function CheckoutPage() {
     updateItemQuantity(id, newQuantity);
   };
 
+  // ddrevetnak@gmail.com
+
+  const onSubmit = async (data: CheckoutFormValues) => {
+    try {
+      // console.log(data);
+
+      setSubmitting(true);
+
+      // ссылка для перенаправления на оплату
+      const url = await createOrder(data);
+
+      toast.success('Заказ успешно оформлен! 📝 Переход на оплату... ', {
+        icon: '✅',
+      });
+
+      if (url) {
+        location.href = url;
+      }
+
+    } catch (error) {
+      console.log(error);
+      setSubmitting(false);
+      toast.error('Не удалось создать заказ', {
+        icon: '❌',
+      });
+    }
+  }
+
   return (
     <Container className="mt-10">
       <Title
@@ -34,62 +84,34 @@ export default function CheckoutPage() {
         className="font-extrabold mb-8 text-[36px]"
       />
 
-      <div className="flex gap-10">
-        {/*LEFT*/}
-        <div className="flex flex-col gap-10 flex-1 mb-20">
-          <CheckoutCart
-            onClickCountButton={onClickCountButton}
-            removeCartItem={removeCartItem}
-            items={items}
-            loading={loading}
-          />
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="flex gap-10">
+            {/*LEFT*/}
+            <div className="flex flex-col gap-10 flex-1 mb-20">
+              <CheckoutCart
+                onClickCountButton={onClickCountButton}
+                removeCartItem={removeCartItem}
+                items={items}
+                loading={loading}
+              />
 
-          <WhiteBlock title="2. Персональные данные">
-            <div className="grid grid-cols-2 gap-5">
-              <Input
-                name="firstName"
-                className="text-base"
-                placeholder="Имя"
-              />
-              <Input
-                name="secondName"
-                className="text-base"
-                placeholder="Фамилия"
-              />
-              <Input
-                name="email"
-                className="text-base"
-                placeholder="E-Mail"
-              />
-              <Input
-                name="phone"
-                className="text-base"
-                placeholder="Телефон"
+              <CheckoutPersonalForm className={loading ? 'opacity-40 pointer-events-none' : ''} />
+
+              <CheckoutAddressForm className={loading ? 'opacity-40 pointer-events-none' : ''} />
+
+            </div>
+
+            {/*RIGHT*/}
+            <div className="w-[450px]">
+              <CheckoutSidebar
+                totalAmount={totalAmount}
+                loading={loading || submitting}
               />
             </div>
-          </WhiteBlock>
-
-          <WhiteBlock title="3. Адрес доставки">
-            <div className="flex flex-col gap-5">
-              <Input
-                name="phone"
-                className="text-base"
-                placeholder="Адрес"
-              />
-              <Textarea
-                rows={5}
-                className="text-base"
-                placeholder="Комментарии к заказу"
-              />
-            </div>
-          </WhiteBlock>
-        </div>
-
-        {/*RIGHT*/}
-        <div className="w-[450px]">
-          <CheckoutSidebar totalAmount={totalAmount} loading={loading || submitting}/>
-        </div>
-      </div>
+          </div>
+        </form>
+      </FormProvider>
 
     </Container>
   );

@@ -173,12 +173,9 @@ model VerificationCode {
 }
 
 enum OrderStatus {
-  // создал но не оплатил
   PENDING
-  // создал и оплатил
   SUCCEEDED
-  // ошибка или отмена
-  CANCELED
+  CANCELLED
 }
 
 // model ABC {
