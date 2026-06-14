@@ -1,3 +1,6 @@
+import {ProfileForm} from "@/shared/components/shared/profile-form";
+import {InfoBlock} from "@/shared/components/shared/info-block";
+
 export {Container} from './container';
 export {Header} from './header';
 export {Title} from './title';
@@ -25,6 +28,10 @@ export {ClearButton} from './clear-button';
 export {ErrorText} from './error-text';
 export {RequiredSymbol} from './required-symbol';
 export {AddressInput} from './address-input';
+export {Providers} from './providers';
+export {ProfileButton} from './profile-button';
+export {ProfileForm} from './profile-form';
+export {InfoBlock} from './info-block';
 
 export * from './checkout';
 export * from './form';

@@ -2,10 +2,15 @@
 
 import {CheckoutFormValues} from "@/shared/constants";
 import {prisma} from "@/prisma/prisma-client";
-import {OrderStatus} from "@prisma/client";
-import {cookies} from "next/headers";
-import {PayOrderTemplate} from "@/shared/components";
+import {OrderStatus, Prisma} from "@prisma/client";
+import {cookies, headers} from "next/headers";
+import {PayOrderTemplate, VerificationUserTemplate} from "@/shared/components";
 import {createPayment, sendEmail} from "@/shared/lib";
+import {hashPassword} from "better-auth/crypto";
+import {
+  TFormRegisterValues
+} from "@/shared/components/shared/modals/forms/schemas";
+import {auth} from "@/shared/lib/auth/auth";
 
 export async function createOrder(data: CheckoutFormValues) {
   try {
@@ -115,5 +120,111 @@ export async function createOrder(data: CheckoutFormValues) {
     return paymentUrl;
   } catch (err) {
     console.log('[CreateOrder] Server error', err);
+  }
+}
+
+// Prisma.UserCreateInput - призма сама генерирует тип на основании схемы User
+// Переменная body должна содержать именно те поля, которые необходимы для создания нового пользователя в базе данных
+export async function registerUser(body: Omit<TFormRegisterValues, 'confirmPassword'>) {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        email: body.email,
+      }
+    });
+
+    if (user) {
+      if (!user.emailVerified) {
+        throw new Error('Почта не подтверждена');
+      }
+
+      throw new Error('Пользователь уже существует');
+    }
+
+    const userId = crypto.randomUUID();
+    // const hashedPassword = hashSync(body.password, 10);
+    const hashedPassword = await hashPassword(body.password);
+
+    const createdUser = await prisma.user.create({
+      data: {
+        id: userId,
+        fullName: body.fullName,
+        email: body.email,
+        emailVerified: false,
+        accounts: {
+          create: {
+            id: crypto.randomUUID(),
+            providerId: 'credential',
+            accountId: body.email,
+            password: hashedPassword
+          }
+        }
+      },
+    });
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    await prisma.verification.create({
+      data: {
+        id: crypto.randomUUID(),
+        identifier: createdUser.email,
+        value: code,
+        expiresAt: expiresAt,
+      },
+    });
+
+    await sendEmail(
+      createdUser.email,
+      'Next Pizza / 📝 Подтверждение регистрации',
+      VerificationUserTemplate({
+        code,
+      }),
+    );
+  } catch (error) {
+    console.log('Error [CREATE_USER]', error);
+    throw error;
+  }
+}
+
+export async function updateUserInfo(body: {
+  fullName: string;
+  email: string;
+  password?: string;
+  currentPassword?: string;
+}) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      throw new Error('Пользователь не авторизован');
+    }
+
+    const userId = session.user.id;
+
+    // 1. Обновляем базовую информацию
+    await prisma.user.update({
+      where: {id: userId},
+      data: {
+        fullName: body.fullName,
+        email: body.email,
+      },
+    });
+
+    // 2. Если передан новый и старый пароль, меняем через Better-Auth
+    if (body.password && body.currentPassword) {
+      await auth.api.changePassword({
+        headers: await headers(),
+        body: {
+          currentPassword: body.currentPassword,
+          newPassword: body.password,
+        },
+      });
+    }
+  } catch (err) {
+    console.log('Error [UPDATE_USER]', err);
+    throw err;
   }
 }

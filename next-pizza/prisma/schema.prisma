@@ -10,28 +10,38 @@ datasource db {
 // создаем таблицу
 
 // пользователь
-model User {
-  id Int @id @default(autoincrement())
 
-  fullName String
+model User {
+  // id Int @id @default(autoincrement())
+  id String @id
+
+  fullName String?
   email    String   @unique
-  password String
+  // password String?
   role     UserRole @default(USER)
-  verified DateTime
+  // verified DateTime?
 
   // авторизация через соц.сеть
-  provider   String?
-  providerId String?
+  // provider   String?
+  // providerId String?
 
-  cart             Cart?
-  orders           Order[]
-  verificationCode VerificationCode?
+  cart   Cart?
+  orders Order[]
+  // verificationCode VerificationCode?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  // name          String
+  emailVerified Boolean   @default(false)
+  image         String?
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("user")
 }
 
 // категория продукта
+
 model Category {
   id Int @id @default(autoincrement())
 
@@ -44,6 +54,7 @@ model Category {
 }
 
 // продукт
+
 model Product {
   id Int @id @default(autoincrement())
 
@@ -61,6 +72,7 @@ model Product {
 }
 
 // полная инф. о вариации пиццы
+
 model ProductItem {
   id Int @id @default(autoincrement())
 
@@ -78,6 +90,7 @@ model ProductItem {
 }
 
 // ингридиент
+
 model Ingredient {
   id Int @id @default(autoincrement())
 
@@ -94,11 +107,12 @@ model Ingredient {
 }
 
 // корзина
+
 model Cart {
   id Int @id @default(autoincrement())
 
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?  @unique
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @unique
 
   items CartItem[]
 
@@ -112,6 +126,7 @@ model Cart {
 }
 
 // продукты в корзине
+
 model CartItem {
   id Int @id @default(autoincrement())
 
@@ -133,11 +148,12 @@ model CartItem {
 }
 
 // заказ
+
 model Order {
   id Int @id @default(autoincrement())
 
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
 
   token String
 
@@ -159,18 +175,18 @@ model Order {
   updateAt DateTime @updatedAt
 }
 
-model VerificationCode {
-  id Int @id @default(autoincrement())
-
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique
-
-  code String
-
-  createAt DateTime @default(now())
-
-  @@unique([userId, code])
-}
+// model VerificationCode {
+//   id Int @id @default(autoincrement())
+//
+//   user   User   @relation(fields: [userId], references: [id])
+//   userId String @unique
+//
+//   code String
+//
+//   createAt DateTime @default(now())
+//
+//   @@unique([userId, code])
+// }
 
 enum OrderStatus {
   PENDING
@@ -178,13 +194,55 @@ enum OrderStatus {
   CANCELLED
 }
 
-// model ABC {
-//   id Int @id @default(autoincrement())
-//
-//   name String
-// }
-
 enum UserRole {
   USER
   ADMIN
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

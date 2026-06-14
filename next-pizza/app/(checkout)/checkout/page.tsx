@@ -22,7 +22,7 @@ import {createOrder} from "@/app/actions";
 export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
 
-  // CheckoutFormValues - для типизации
+  // CheckoutFormValues - для подсказок typescript
   // checkoutFormSchema - для рантайм проверки
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
@@ -49,12 +49,8 @@ export default function CheckoutPage() {
     updateItemQuantity(id, newQuantity);
   };
 
-  // ddrevetnak@gmail.com
-
   const onSubmit = async (data: CheckoutFormValues) => {
     try {
-      // console.log(data);
-
       setSubmitting(true);
 
       // ссылка для перенаправления на оплату

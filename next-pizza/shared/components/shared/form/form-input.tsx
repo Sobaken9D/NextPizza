@@ -49,11 +49,11 @@ export const FormInput = ({
         </p>
       )}
 
-        <div className="relative">
-          <Input className="h-12 text-md" {...register(name)} {...props} />
+      <div className="relative">
+        <Input className="h-12 text-md" {...register(name)} {...props} />
 
-          {value && <ClearButton onClick={onClickClear} />}
-        </div>
+        {value && <ClearButton onClick={onClickClear} />}
+      </div>
 
       {errorText && <ErrorText
         text={errorText}

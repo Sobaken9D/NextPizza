@@ -4,16 +4,13 @@ import React from 'react';
 import {cn} from "@/shared/lib/utils";
 import {Container} from "@/shared/components/shared/container";
 import Image from "next/image";
-import {Button} from "../ui";
-import {User} from "lucide-react";
-import {ShoppingCart} from "lucide-react";
-import {ArrowRight} from "lucide-react";
 import Link from "next/link";
 import {SearchInput} from "@/shared/components/shared/search-input";
 import {CartButton} from "@/shared/components/shared/cart-button";
 import {useRouter, useSearchParams} from "next/navigation";
-
 import toast from "react-hot-toast";
+import {AuthModal, ProfileButton} from "@/shared/components";
+
 
 interface Props {
   className?: string;
@@ -26,6 +23,8 @@ export const Header: React.FC<Props> = ({
   hasSearch = true,
   hasCart = true
 }) => {
+  const [openAuthModal, setOpenAuthModal] = React.useState(false);
+
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -34,6 +33,10 @@ export const Header: React.FC<Props> = ({
 
     if (searchParams.has('paid')) {
       toastMessage = 'Заказ успешно оплачен! Информация отправлена на почту.';
+    }
+
+    if (searchParams.has('verified')) {
+      toastMessage = 'Почта успешно подтверждена!';
     }
 
     if (toastMessage) {
@@ -70,13 +73,9 @@ export const Header: React.FC<Props> = ({
 
         {/*Правая часть*/}
         <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            className="flex items-center gap-1"
-          >
-            <User size={16} />
-            Войти
-          </Button>
+          <AuthModal open={openAuthModal} onClose={() => setOpenAuthModal(false)}/>
+
+          <ProfileButton onClickSignIn={() => setOpenAuthModal(true)} />
 
           {hasCart && (<div><CartButton /></div>)}
         </div>
